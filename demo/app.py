@@ -1,0 +1,58 @@
+"""
+Gradio demo — a quick, shareable web UI for your model, no frontend code
+required. This is genuinely new (you know React, but Gradio is a different,
+much faster tool for ML demos specifically) and it's what a lot of ML/health
+tech job postings mean when they mention "prototyping" or "demo" experience.
+
+Run locally with: python demo/app.py
+Then deploy for free by creating a Hugging Face Space and pushing this file
+(HF Spaces natively supports Gradio apps — no server to manage).
+
+Docs: https://www.gradio.app/docs
+"""
+
+import gradio as gr
+import torch
+from PIL import Image
+
+from src import config
+from src.model import build_model, load_checkpoint
+from src.transforms import get_val_transforms
+
+# TODO: load your trained model once, same as in api/main.py
+model = None  # TODO
+
+
+def predict(image: Image.Image) -> dict:
+    """
+    TODO:
+    1. Apply get_val_transforms() to the input PIL image.
+    2. Run it through `model`, softmax the output to get
+       [p_benign, p_malignant].
+    3. Return {"benign": p_benign, "malignant": p_malignant} — Gradio's
+       gr.Label output component renders a dict of {class_name: probability}
+       as a nice bar chart automatically.
+    """
+    raise NotImplementedError
+
+
+# TODO: build the Gradio interface. Something like:
+# demo = gr.Interface(
+#     fn=predict,
+#     inputs=gr.Image(type="pil"),
+#     outputs=gr.Label(num_top_classes=2),
+#     title="Skin Cancer Detector",
+#     description=(
+#         "Portfolio project — trained on the public HAM10000 dataset to "
+#         "distinguish malignant from benign skin lesions. "
+#         "NOT A DIAGNOSTIC TOOL. For demonstration purposes only — see a "
+#         "dermatologist for any real skin concern."
+#     ),
+# )
+# Keep that disclaimer in the description verbatim — don't soften or
+# remove it even for a portfolio demo.
+demo = None  # TODO
+
+if __name__ == "__main__":
+    if demo is not None:
+        demo.launch()

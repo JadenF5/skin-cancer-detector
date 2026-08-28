@@ -1,0 +1,29 @@
+# Core
+torch>=2.2
+torchvision>=0.17
+numpy
+pandas
+scikit-learn
+pillow
+
+# Augmentation (new)
+albumentations
+
+# Experiment tracking (new)
+wandb
+
+# Interpretability (new)
+grad-cam
+
+# API (you already know FastAPI — reused here)
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Demo (new)
+gradio
+
+# Utilities
+tqdm
+matplotlib
+seaborn
