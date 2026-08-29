@@ -17,10 +17,9 @@ from albumentations.pytorch import ToTensorV2
 
 from . import config
 
-
 def get_train_transforms() -> A.Compose:
     """
-    TODO: build an A.Compose([...]) pipeline. At minimum you'll want:
+    build an A.Compose([...]) pipeline. At minimum you'll want:
     - A.Resize(config.IMAGE_SIZE, config.IMAGE_SIZE)
     - Some augmentations appropriate for dermatoscopic images, e.g.
       A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90(),
@@ -32,12 +31,24 @@ def get_train_transforms() -> A.Compose:
       std=[0.229, 0.224, 0.225]
     - ToTensorV2() at the end, to convert to a torch tensor
     """
-    raise NotImplementedError
-
+    return A.Compose([
+      A.Resize(config.IMAGE_SIZE, config.IMAGE_SIZE),
+      A.HorizontalFlip(p=0.5),
+      A.VerticalFlip(p=0.5),
+      A.RandomRotate90(p=0.5),
+      A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=0.5),
+      A.ShiftScaleRotate(shift_limit=0.1, scale_limit=0.1, rotate_limit=45, p=0.5,),
+      A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+      ToTensorV2(),
+    ])
 
 def get_val_transforms() -> A.Compose:
     """
-    TODO: same as above but WITHOUT the random augmentations — just
+    same as above but WITHOUT the random augmentations — just
     Resize -> Normalize -> ToTensorV2.
     """
-    raise NotImplementedError
+    return A.Compose([
+      A.Resize(config.IMAGE_SIZE, config.IMAGE_SIZE),
+      A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+      ToTensorV2(),
+    ])

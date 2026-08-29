@@ -9,11 +9,11 @@ file when you want to try a different learning rate or image size.
 from pathlib import Path
 
 # ---- Paths ----
-# TODO: point these at wherever you unzipped the HAM10000 download
+# point these at wherever you unzipped the HAM10000 download
 DATA_DIR = Path("data/raw")
 METADATA_CSV = DATA_DIR / "HAM10000_metadata.csv"
 IMAGE_DIRS = [
-    # TODO: list both image folders here, e.g.
+    # list both image folders here
     DATA_DIR / "HAM10000_images_part_1",
     DATA_DIR / "HAM10000_images_part_2",
 ]
@@ -39,7 +39,7 @@ def dx_to_label(dx: str) -> int:
     Map a raw `dx` string from the metadata CSV to a binary class index
     (0 = benign, 1 = malignant), using MALIGNANT_DX above.
 
-    TODO: implement this — it's one line, but dataset.py depends on it, so
+    implement this — it's one line, but dataset.py depends on it, so
     write it now. Return CLASSES.index("malignant") if dx is in
     MALIGNANT_DX, else CLASSES.index("benign").
     """
@@ -49,18 +49,18 @@ def dx_to_label(dx: str) -> int:
         return CLASSES.index("benign")
 
 # ---- Model ----
-# TODO: pick a torchvision backbone, e.g. "resnet18" or "efficientnet_b0"
+# pick a torchvision backbone, e.g. "resnet18" or "efficientnet_b0"
 BACKBONE = "efficientnet_b0"
-IMAGE_SIZE = 224  # TODO: e.g. 224 (must match what your backbone expects)
+IMAGE_SIZE = 224  # 224 (must match what your backbone expects)
 
 # ---- Training ----
-BATCH_SIZE = 32         # TODO
-NUM_EPOCHS = 15         # TODO
-LEARNING_RATE = .0001   # TODO
-VAL_SPLIT = .15         # TODO: fraction of data held out for validation, e.g. 0.15
-TEST_SPLIT = .15        # TODO: fraction held out for test, e.g. 0.15
+BATCH_SIZE = 32         
+NUM_EPOCHS = 15         
+LEARNING_RATE = .0001   
+VAL_SPLIT = .15         # fraction of data held out for validation
+TEST_SPLIT = .15        # raction held out for test
 RANDOM_SEED = 42
 
 # ---- Weights & Biases ----
 WANDB_PROJECT = "skin-cancer-classifier"
-WANDB_ENTITY = "JadenF5"  # TODO: your wandb username or team
+WANDB_ENTITY = "JadenF5"  # your wandb username or team

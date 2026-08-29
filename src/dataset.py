@@ -12,6 +12,7 @@ to handle batching, shuffling, and parallel loading for you.
 from pathlib import Path
 from typing import Optional, Callable
 from sklearn.model_selection import train_test_split
+import torch  # Added to convert fallback images to tensors
 import pandas as pd
 from torch.utils.data import Dataset
 from PIL import Image
@@ -73,12 +74,13 @@ class HAM10000Dataset(Dataset):
         pil_image = Image.open(path).convert("RGB")
         dx_string = row["dx"]
         label_index = config.dx_to_label(dx_string)
-        if self.transform != None:
+        if self.transform is not None:
             image_np = np.array(pil_image)
             augmented = self.transform(image=image_np)
             image_tensor = augmented["image"]
         else:
-            image_tensor = pil_image 
+            image_np = image_np.transpose(2, 0, 1)
+            image_tensor = torch.from_numpy(image_np).float()
         return (image_tensor, label_index)
 
 
@@ -91,7 +93,6 @@ def build_splits(
     """
     Load the metadata CSV and split it into train/val/test DataFrames.
 
-    TODO:
     - Read the CSV with pandas.
     - Add a column applying config.dx_to_label to `dx`, so you can stratify
       on the *binary* label rather than the original 7-way `dx` — this
@@ -109,7 +110,7 @@ def build_splits(
     once your basic pipeline works, to avoid a leakage-inflated accuracy.
     """
     df = pd.read_csv(metadata_csv)
-    df['new_label_column'] = df['dx'].apply()
+    df['new_label_column'] = df['dx'].apply(config.dx_to_labe)
 
     remaining_df, test_df = train_test_split(
     df,

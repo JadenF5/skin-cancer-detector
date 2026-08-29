@@ -43,7 +43,17 @@ def build_model(num_classes: int = None, pretrained: bool = True) -> nn.Module:
     """
     if num_classes is None:
         num_classes = len(config.CLASSES)
-    raise NotImplementedError
+    if config.BACKBONE == "efficientnet_b0":
+        model = models.efficientnet_b0(weights="IMAGENET1K_V1" if pretrained else None)
+        in_features = model.classifier[-1].in_features
+        model.classifier[-1] = nn.Linear(in_features, num_classes)
+    elif config.BACKBONE == "resnet18":
+        model = models.resnet18(weights="IMAGENET1K_V1" if pretrained else None)
+        in_features = model.fc.in_features
+        model.fc = nn.Linear(in_features, num_classes)
+    else:
+        raise ValueError(f"Unsupported backbone: {config.BACKBONE}")
+    return model
 
 
 def freeze_backbone(model: nn.Module) -> nn.Module:
@@ -57,14 +67,18 @@ def freeze_backbone(model: nn.Module) -> nn.Module:
     against training the whole network (this function unused / not called)
     to see which generalizes better on your val set.
     """
-    raise NotImplementedError
+    for params in model.parameters():
+        params.requires_grad = False
+    for params in model.classifier.parameters():
+        params.requires_grad = True
+    return model
 
 
 def save_checkpoint(model: nn.Module, path) -> None:
     """
     TODO: torch.save(model.state_dict(), path)
     """
-    raise NotImplementedError
+    torch.save(model.state_dict(), path)
 
 
 def load_checkpoint(model: nn.Module, path, device: str = "cpu") -> nn.Module:
@@ -72,4 +86,5 @@ def load_checkpoint(model: nn.Module, path, device: str = "cpu") -> nn.Module:
     TODO: model.load_state_dict(torch.load(path, map_location=device));
     return model
     """
-    raise NotImplementedError
+    model.load_state_dict(torch.load(path, map_location=device))
+    return model
