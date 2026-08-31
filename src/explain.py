@@ -21,7 +21,7 @@ import torch
 from PIL import Image
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
-
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget 
 from . import config
 from .model import build_model, load_checkpoint
 from .transforms import get_val_transforms
@@ -46,7 +46,7 @@ def generate_gradcam(model, image_path: Path, target_layer, device: str = "cpu")
    transformed = get_val_transforms()(image=img_np)
    input_tensor = transformed["image"].unsqueeze(0).to(device)
    with GradCAM(model=model, target_layers=[target_layer]) as cam:
-      grayscale_cam = cam(input_tensor=input_tensor)[0]
+      grayscale_cam = cam(input_tensor=input_tensor, targets=[ClassifierOutputTarget(1)])[0]
    visualization = show_cam_on_image(rgb_img_0_to_1, grayscale_cam, use_rgb=True)
    return visualization
 
