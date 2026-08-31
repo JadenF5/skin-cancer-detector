@@ -3,6 +3,13 @@ __pycache__/
 *.pyc
 .env
 
+src/
+dxtype_bias_check.py
+gradcam_by_dxtype.py
+gradcam_review.py
+
+outputs/
+
 data/raw/
 data/processed/
 
