@@ -55,7 +55,7 @@ IMAGE_SIZE = 224  # 224 (must match what your backbone expects)
 
 # ---- Training ----
 BATCH_SIZE = 32         
-NUM_EPOCHS = 2      
+NUM_EPOCHS = 15      
 LEARNING_RATE = .0001   
 VAL_SPLIT = .15         # fraction of data held out for validation
 TEST_SPLIT = .15        # raction held out for test

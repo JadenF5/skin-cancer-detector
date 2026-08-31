@@ -18,14 +18,14 @@ WORKDIR /app
 # Hint: copy requirements.txt BEFORE copying the rest of your code — Docker
 # caches layers, so if your code changes but requirements.txt doesn't,
 # this step won't need to re-run on every rebuild.
-# COPY requirements.txt .
-# RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # TODO: copy the rest of your project into the image
-# COPY . .
+COPY . .
 
 # TODO: expose the port uvicorn will run on
-# EXPOSE 8000
+EXPOSE 8000
 
 # TODO: set the command that runs when the container starts
-# CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
