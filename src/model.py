@@ -17,7 +17,6 @@ from . import config
 
 def build_model(num_classes: int = None, pretrained: bool = True) -> nn.Module:
     """
-    TODO:
     1. Load a torchvision backbone matching config.BACKBONE, e.g.:
          torchvision.models.resnet18(weights="IMAGENET1K_V1" if pretrained else None)
        or for EfficientNet:
@@ -62,28 +61,34 @@ def freeze_backbone(model: nn.Module) -> nn.Module:
     classification layer, so only that layer trains. Faster, and can work
     well when your dataset is small relative to the backbone.
 
-    TODO: set `.requires_grad = False` on every parameter except the ones
+    set `.requires_grad = False` on every parameter except the ones
     belonging to the layer you replaced in build_model(). Compare results
     against training the whole network (this function unused / not called)
     to see which generalizes better on your val set.
     """
     for params in model.parameters():
         params.requires_grad = False
-    for params in model.classifier.parameters():
-        params.requires_grad = True
+    if config.BACKBONE == "efficientnet_b0":
+        for param in model.classifier.parameters():
+            param.requires_grad = True
+    elif config.BACKBONE == "resnet18":
+        for param in model.fc.parameters():
+            param.requires_grad = True
+    else:
+        raise ValueError(f"Unsupported backbone: {config.BACKBONE}")
     return model
 
 
 def save_checkpoint(model: nn.Module, path) -> None:
     """
-    TODO: torch.save(model.state_dict(), path)
+    torch.save(model.state_dict(), path)
     """
     torch.save(model.state_dict(), path)
 
 
 def load_checkpoint(model: nn.Module, path, device: str = "cpu") -> nn.Module:
     """
-    TODO: model.load_state_dict(torch.load(path, map_location=device));
+    model.load_state_dict(torch.load(path, map_location=device));
     return model
     """
     model.load_state_dict(torch.load(path, map_location=device))

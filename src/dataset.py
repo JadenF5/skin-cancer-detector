@@ -74,14 +74,14 @@ class HAM10000Dataset(Dataset):
         pil_image = Image.open(path).convert("RGB")
         dx_string = row["dx"]
         label_index = config.dx_to_label(dx_string)
+        image_np = np.array(pil_image)
         if self.transform is not None:
-            image_np = np.array(pil_image)
             augmented = self.transform(image=image_np)
             image_tensor = augmented["image"]
         else:
             image_np = image_np.transpose(2, 0, 1)
-            image_tensor = torch.from_numpy(image_np).float()
-        return (image_tensor, label_index)
+            image_tensor = torch.from_numpy(image_np).float() / 255.0
+        return image_tensor, label_index
 
 
 def build_splits(
@@ -110,7 +110,7 @@ def build_splits(
     once your basic pipeline works, to avoid a leakage-inflated accuracy.
     """
     df = pd.read_csv(metadata_csv)
-    df['new_label_column'] = df['dx'].apply(config.dx_to_labe)
+    df['new_label_column'] = df['dx'].apply(config.dx_to_label)
 
     remaining_df, test_df = train_test_split(
     df,
@@ -126,4 +126,4 @@ def build_splits(
     random_state=seed,
     stratify=remaining_df['new_label_column'])
 
-    return train_df, val_df, test_df
+    return (train_df, val_df, test_df)

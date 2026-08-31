@@ -14,14 +14,16 @@ Docs: https://www.gradio.app/docs
 import gradio as gr
 import torch
 from PIL import Image
-
+import numpy as np
 from src import config
 from src.model import build_model, load_checkpoint
 from src.transforms import get_val_transforms
 
-# TODO: load your trained model once, same as in api/main.py
-model = None  # TODO
-
+# load your trained model once, same as in api/main.py
+device = "cpu"
+model = build_model(pretrained=False)  # TODO
+model = load_checkpoint(model, config.CHECKPOINT_DIR / "best_model.pth", device)
+model.eval()
 
 def predict(image: Image.Image) -> dict:
     """
@@ -33,7 +35,15 @@ def predict(image: Image.Image) -> dict:
        gr.Label output component renders a dict of {class_name: probability}
        as a nice bar chart automatically.
     """
-    raise NotImplementedError
+    img_np = np.array(image)
+    transformed = get_val_transforms()(image=img_np)
+    input_tensor = transformed["image"].unsqueeze(0).to(device)
+    with torch.no_grad():
+        logits = model(input_tensor)
+        probabilities = torch.softmax(logits, dim=1)
+        p_benign = probabilities[0, 0].item()
+        p_malignant = probabilities[0, 1].item()
+    return {"benign": p_benign, "malignant": p_malignant}
 
 
 # TODO: build the Gradio interface. Something like:
@@ -51,7 +61,18 @@ def predict(image: Image.Image) -> dict:
 # )
 # Keep that disclaimer in the description verbatim — don't soften or
 # remove it even for a portfolio demo.
-demo = None  # TODO
+demo = gr.Interface(
+    fn=predict,
+    inputs=gr.Image(type="pil"),
+    outputs=gr.Label(num_top_classes=2),
+    title="Skin Cancer Detector",
+    description=(
+        "Portfolio project — trained on the public HAM10000 dataset to "
+        "distinguish malignant from benign skin lesions. "
+        "NOT A DIAGNOSTIC TOOL. For demonstration purposes only — see a "
+        "dermatologist for any real skin concern."
+    ),
+)
 
 if __name__ == "__main__":
     if demo is not None:

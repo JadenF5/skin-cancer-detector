@@ -55,7 +55,7 @@ IMAGE_SIZE = 224  # 224 (must match what your backbone expects)
 
 # ---- Training ----
 BATCH_SIZE = 32         
-NUM_EPOCHS = 15         
+NUM_EPOCHS = 2      
 LEARNING_RATE = .0001   
 VAL_SPLIT = .15         # fraction of data held out for validation
 TEST_SPLIT = .15        # raction held out for test
@@ -63,4 +63,4 @@ RANDOM_SEED = 42
 
 # ---- Weights & Biases ----
 WANDB_PROJECT = "skin-cancer-classifier"
-WANDB_ENTITY = "JadenF5"  # your wandb username or team
+WANDB_ENTITY = "jadenf5project"  # your wandb username or team
