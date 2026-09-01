@@ -10,7 +10,7 @@ Then deploy for free by creating a Hugging Face Space and pushing this file
 
 Docs: https://www.gradio.app/docs
 """
-
+import spaces
 import gradio as gr
 import torch
 from PIL import Image
@@ -20,11 +20,12 @@ from src.model import build_model, load_checkpoint
 from src.transforms import get_val_transforms
 
 # load your trained model once, same as in api/main.py
-device = "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 model = build_model(pretrained=False)  # TODO
 model = load_checkpoint(model, config.CHECKPOINT_DIR / "best_model.pth", device)
 model.eval()
 
+@spaces.GPU
 def predict(image: Image.Image) -> dict:
     """
     TODO:
