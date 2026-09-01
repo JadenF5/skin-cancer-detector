@@ -1,18 +1,9 @@
 """
-Gradio demo — a quick, shareable web UI for your model, no frontend code
-required. This is genuinely new (you know React, but Gradio is a different,
-much faster tool for ML demos specifically) and it's what a lot of ML/health
-tech job postings mean when they mention "prototyping" or "demo" experience.
-
-Run locally with: python demo/app.py
-Then deploy for free by creating a Hugging Face Space and pushing this file
-(HF Spaces natively supports Gradio apps — no server to manage).
-
-Docs: https://www.gradio.app/docs
+Using Render.
 """
-import spaces
 import gradio as gr
 import torch
+import os
 from PIL import Image
 import numpy as np
 from src import config
@@ -25,7 +16,6 @@ model = build_model(pretrained=False)  # TODO
 model = load_checkpoint(model, config.CHECKPOINT_DIR / "best_model.pth", device)
 model.eval()
 
-@spaces.GPU
 def predict(image: Image.Image) -> dict:
     """
     TODO:
@@ -47,7 +37,7 @@ def predict(image: Image.Image) -> dict:
     return {"benign": p_benign, "malignant": p_malignant}
 
 
-# TODO: build the Gradio interface. Something like:
+# TODO: build the Render interface. Something like:
 # demo = gr.Interface(
 #     fn=predict,
 #     inputs=gr.Image(type="pil"),
@@ -77,4 +67,4 @@ demo = gr.Interface(
 
 if __name__ == "__main__":
     if demo is not None:
-        demo.launch()
+        demo.launch(server_name="0.0.0.0", server_port=int(os.environ.get("PORT", 7860)))
